@@ -2,180 +2,190 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>ডিজিটাল তাসবিহ</title>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-tap-highlight-color: transparent !important;
-            outline: none !important;
             touch-action: manipulation;
         }
-
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            overflow: hidden !important;
-            background-color: #121212 !important;
-            color: #ffffff !important;
-            font-family: Arial, sans-serif;
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px 15px;
         }
-
-        /* ওপরের স্থির বাটন সেকশন */
-        .top-controls {
-            width: 100%;
-            padding: 20px 10px 10px 10px;
+        .top-bar {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 10px;
-            z-index: 999;
-            background-color: #121212;
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
         }
-
-        .btn {
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: bold;
-            border: none;
+        .mode-btn {
+            padding: 10px 18px;
             border-radius: 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            -webkit-tap-highlight-color: transparent !important;
-        }
-
-        .btn-mode {
-            background-color: #2c3e50;
+            border: none;
+            font-size: 15px;
+            font-weight: bold;
             color: #ffffff;
+            cursor: pointer;
+            background-color: #2c3e50;
         }
-
-        .btn-mode.active {
+        .mode-btn.active-33 {
             background-color: #00e676;
             color: #000000;
         }
-
-        .btn-reset {
+        .mode-btn.active-100 {
+            background-color: #00e676;
+            color: #000000;
+        }
+        .reset-btn {
             background-color: #ff5252;
             color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 20px;
+            border: none;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
         }
-
-        /* ফুল স্ক্রিন ইনস্ট্যান্ট টাচ এরিয়া */
-        .main-touch-zone {
-            flex: 1;
-            width: 100%;
+        .total-box {
+            font-size: 18px;
+            color: #b0bec5;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .total-count {
+            color: #ffca28;
+            font-weight: bold;
+        }
+        .center-content {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent !important;
+            justify-content: center;
+            flex-grow: 1;
         }
-
-        .top-info {
-            font-size: 26px;
+        .target-text {
+            font-size: 24px;
             color: #b0bec5;
             margin-bottom: 10px;
-            pointer-events: none;
         }
-
-        .counter-display {
-            font-size: 130px;
+        .count-display {
+            font-size: 120px;
             font-weight: bold;
             color: #00e676;
             line-height: 1;
-            pointer-events: none;
         }
-
-        .instruction {
+        .instruction-text {
             font-size: 16px;
             color: #78909c;
-            margin-top: 30px;
-            pointer-events: none;
+            margin-bottom: 20px;
+            text-align: center;
         }
     </style>
 </head>
-<body id="touch-area">
+<body id="tapArea">
 
-    <!-- ওপরের বাটন -->
-    <div class="top-controls" id="controls">
-        <button id="btn-33" class="btn btn-mode active" onclick="setTarget(33, event)">৩৩ মোড</button>
-        <button id="btn-100" class="btn btn-mode" onclick="setTarget(100, event)">১০০ মোড</button>
-        <button class="btn btn-reset" onclick="resetCounter(event)">রিসেট</button>
+    <div>
+        <div class="top-bar">
+            <button id="btn33" class="mode-btn active-33" onclick="setTarget(33, event)">৩৩ মোড</button>
+            <button id="btn100" class="mode-btn" onclick="setTarget(100, event)">১০০ মোড</button>
+            <button class="reset-btn" onclick="resetAll(event)">রিসেট</button>
+        </div>
+        <div class="total-box">
+            সর্বমোট তাসবিহ: <span id="totalCount" class="total-count">০</span>
+        </div>
     </div>
 
-    <!-- ফুল স্ক্রিন টাচ জোন -->
-    <div class="main-touch-zone" id="fast-touch-zone">
-        <div class="top-info">
-            টার্গেট: <span id="target-display">৩৩</span>
-        </div>
+    <div class="center-content">
+        <div class="target-text">টার্গেট: <span id="targetDisplay">৩৩</span></div>
+        <div id="countDisplay" class="count-display">0</div>
+    </div>
 
-        <div class="counter-display" id="count-display">
-            0
-        </div>
-
-        <div class="instruction">
-            স্ক্রিনের যেকোনো জায়গায় দ্রুত টাচ করুন
-        </div>
+    <div class="instruction-text">
+        স্ক্রিনের যেকোনো জায়গায় টাচ করুন
     </div>
 
     <script>
         let count = 0;
+        let totalCount = 0;
         let target = 33;
 
-        const countDisplay = document.getElementById('count-display');
-        const targetDisplay = document.getElementById('target-display');
-        const fastTouchZone = document.getElementById('fast-touch-zone');
-        const btn33 = document.getElementById('btn-33');
-        const btn100 = document.getElementById('btn-100');
+        const countDisplay = document.getElementById('countDisplay');
+        const totalCountDisplay = document.getElementById('totalCount');
+        const targetDisplay = document.getElementById('targetDisplay');
+        const btn33 = document.getElementById('btn33');
+        const btn100 = document.getElementById('btn100');
 
-        function triggerVibration() {
-            if ("vibrate" in navigator) {
-                navigator.vibrate(1000); // ঠিক ১ সেকেন্ড (১০০০ মিলি-সেকেন্ড) ভাইব্রেশন
-            }
+        function toBanglaDigit(num) {
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            return num.toString().split('').map(d => banglaDigits[d] || d).join('');
         }
 
-        // দ্রুত পর পর ইনস্ট্যান্ট টাচ হ্যান্ডলার
-        fastTouchZone.addEventListener('touchstart', function(e) {
-            e.preventDefault();
+        function updateDisplay() {
+            countDisplay.innerText = count.toString(); // বর্তমান কাউন্ট ইংলিশে দেখাবে
+            totalCountDisplay.innerText = toBanglaDigit(totalCount);
+            targetDisplay.innerText = toBanglaDigit(target);
+        }
 
+        function incrementCount() {
             count++;
-            countDisplay.innerText = count;
+            totalCount++;
 
-            if (count >= target) {
-                triggerVibration();
-                count = 0;
-                countDisplay.innerText = count;
+            // টার্গেট (৩৩ বা ১০০) পূর্ণ হলে ১ সেকেন্ড ভাইব্রেশন হবে এবং বর্তমান কাউন্ট ০ হয়ে যাবে
+            if (count === target) {
+                if (navigator.vibrate) {
+                    navigator.vibrate(1000);
+                }
+                count = 0; // সাইকেল শেষ হওয়ায় বর্তমান কাউন্ট ০
             }
-        }, { passive: false });
 
-        function setTarget(newTarget, e) {
-            e.stopPropagation();
+            updateDisplay();
+        }
+
+        // মোড পরিবর্তন বাটন
+        function setTarget(newTarget, event) {
+            if (event) event.stopPropagation();
             target = newTarget;
-            targetDisplay.innerText = target;
             count = 0;
-            countDisplay.innerText = count;
+            totalCount = 0;
 
-            if (newTarget === 33) {
-                btn33.classList.add('active');
-                btn100.classList.remove('active');
+            if (target === 33) {
+                btn33.className = 'mode-btn active-33';
+                btn100.className = 'mode-btn';
             } else {
-                btn100.classList.add('active');
-                btn33.classList.remove('active');
+                btn33.className = 'mode-btn';
+                btn100.className = 'mode-btn active-100';
             }
+            updateDisplay();
         }
 
-        function resetCounter(e) {
-            e.stopPropagation();
+        // রিসেট বাটন
+        function resetAll(event) {
+            if (event) event.stopPropagation();
             count = 0;
-            countDisplay.innerText = count;
+            totalCount = 0;
+            updateDisplay();
         }
+
+        // স্ক্রিনে ট্যাপ করার ইভেন্ট
+        document.body.addEventListener('pointerdown', function(e) {
+            if (e.target.tagName === 'BUTTON') return;
+            e.preventDefault();
+            incrementCount();
+        });
+
+        updateDisplay();
     </script>
 </body>
 </html>
