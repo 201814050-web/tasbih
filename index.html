@@ -113,13 +113,14 @@
     </div>
 
     <div class="instruction-text">
-        স্ক্রিনের যেকোনো জায়গায় টাচ করুন
+        স্ক্রিনের যেকোনো জায়গায় দ্রুত টাচ করুন
     </div>
 
     <script>
-        let count = 0;
-        let totalCount = 0;
-        let target = 33;
+        // লোকাল স্টোরেজ থেকে আগের ডাটা লোড করা (অ্যাপ বন্ধ করে চালালেও আর মুছবে না)
+        let count = parseInt(localStorage.getItem('tasbih_current_count')) || 0;
+        let totalCount = parseInt(localStorage.getItem('tasbih_total_count')) || 0;
+        let target = parseInt(localStorage.getItem('tasbih_target')) || 33;
 
         const countDisplay = document.getElementById('countDisplay');
         const totalCountDisplay = document.getElementById('totalCount');
@@ -127,33 +128,44 @@
         const btn33 = document.getElementById('btn33');
         const btn100 = document.getElementById('btn100');
 
+        // স্টার্টআপে সঠিক মোড বাটন একটিভ করা
+        if (target === 100) {
+            btn33.className = 'mode-btn';
+            btn100.className = 'mode-btn active-100';
+        }
+
         function toBanglaDigit(num) {
             const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
             return num.toString().split('').map(d => banglaDigits[d] || d).join('');
         }
 
+        function saveData() {
+            localStorage.setItem('tasbih_current_count', count);
+            localStorage.setItem('tasbih_total_count', totalCount);
+            localStorage.setItem('tasbih_target', target);
+        }
+
         function updateDisplay() {
-            countDisplay.innerText = count.toString(); // বর্তমান কাউন্ট ইংলিশে দেখাবে
+            countDisplay.innerText = count.toString();
             totalCountDisplay.innerText = toBanglaDigit(totalCount);
             targetDisplay.innerText = toBanglaDigit(target);
+            saveData(); // প্রতি আপডেটে ডাটা সেভ হবে
         }
 
         function incrementCount() {
             count++;
             totalCount++;
 
-            // টার্গেট (৩৩ বা ১০০) পূর্ণ হলে ১ সেকেন্ড ভাইব্রেশন হবে এবং বর্তমান কাউন্ট ০ হয়ে যাবে
             if (count === target) {
                 if (navigator.vibrate) {
                     navigator.vibrate(1000);
                 }
-                count = 0; // সাইকেল শেষ হওয়ায় বর্তমান কাউন্ট ০
+                count = 0; 
             }
 
             updateDisplay();
         }
 
-        // মোড পরিবর্তন বাটন
         function setTarget(newTarget, event) {
             if (event) event.stopPropagation();
             target = newTarget;
@@ -170,7 +182,6 @@
             updateDisplay();
         }
 
-        // রিসেট বাটন
         function resetAll(event) {
             if (event) event.stopPropagation();
             count = 0;
@@ -178,7 +189,6 @@
             updateDisplay();
         }
 
-        // স্ক্রিনে ট্যাপ করার ইভেন্ট
         document.body.addEventListener('pointerdown', function(e) {
             if (e.target.tagName === 'BUTTON') return;
             e.preventDefault();
@@ -186,6 +196,15 @@
         });
 
         updateDisplay();
+
+        // অফলাইনে কাজ করার জন্য সার্ভিস ওয়ার্কার রেজিস্টার করা
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('Service Worker registered', reg))
+                    .catch((err) => console.log('Service Worker registration failed', err));
+            });
+        }
     </script>
 </body>
 </html>
